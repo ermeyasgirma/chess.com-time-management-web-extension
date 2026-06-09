@@ -11,6 +11,10 @@
       ],
       "js": [
         "src/content/chesscom-detector.js",
+        "src/shared/move-timer.js",
+        "src/shared/warning-controller.js",
+        "src/shared/debug-status.js",
+        "src/content/debug-overlay.js",
         "src/content/live-game-content-script.js"
       ],
       "run_at": "document_idle"

@@ -137,10 +137,13 @@ Current files:
 
 - `manifest.json`: loads the content scripts on Chess.com pages.
 - `src/content/chesscom-detector.js`: isolated live-game detection logic.
+- `src/content/debug-overlay.js`: renders a small diagnostic panel on Chess.com pages.
 - `src/content/live-game-content-script.js`: runs detection in the browser, watches DOM changes, and publishes status changes.
+- `src/shared/debug-status.js`: formats diagnostic status rows for the debug overlay.
 - `src/shared/move-timer.js`: pure state machine for tracking elapsed time on the user's current move.
 - `src/shared/warning-controller.js`: pure warning decision logic for thresholds, cooldowns, and per-move warning limits.
 - `tests/unit/chesscom-detector.test.js`: unit tests for URL and DOM detection behavior.
+- `tests/unit/debug-status.test.js`: unit tests for debug overlay status formatting.
 - `tests/unit/move-timer.test.js`: unit tests for move timer transitions.
 - `tests/unit/warning-controller.test.js`: unit tests for warning threshold and cooldown behavior.
 
@@ -157,7 +160,8 @@ To try it in Chrome:
 3. Choose "Load unpacked".
 4. Select this repository folder.
 5. Open a Chess.com live game.
-6. Check the page console for `[Chess Time Manager] Live game detection:` logs.
+6. Use the "Chess Time Manager Debug" panel on the page to inspect extension state.
+7. Check the page console for `[Chess Time Manager] Live game detection:` logs if deeper debugging is needed.
 
 The content script also writes detection state onto the page root element:
 
@@ -167,6 +171,27 @@ data-chess-time-manager-is-live-game="true"
 ```
 
 This initial slice uses plain JavaScript so the extension can be loaded directly before build tooling is introduced. When the project is scaffolded with WXT or Plasmo, the detector should be moved to TypeScript while keeping the same isolated module boundary.
+
+## Debug Overlay
+
+The extension now renders a small debug overlay on Chess.com pages. This is intended as a temporary development tool so each project stage can be checked manually while the extension is loaded.
+
+The overlay currently shows:
+
+- whether the extension scripts loaded
+- whether the detector, timer, and warning modules loaded
+- whether the current page is on Chess.com
+- live-game detection status
+- board and clock evidence
+- user-turn detection status, currently marked as not wired yet
+- move timer state
+- latest warning decision
+- threshold and cooldown settings
+- module self-test status
+
+The "Run self-test" button runs the timer and warning modules in the content-script context. It starts a synthetic move, advances it to the warning threshold, and verifies that the warning controller fires. This confirms the timer and warning stages work inside the loaded extension even before Chess.com-specific user-turn detection is implemented.
+
+The debug overlay can be hidden with "Hide" and restored with the compact "CTM Debug" button.
 
 ## Timer And Warning Logic
 
