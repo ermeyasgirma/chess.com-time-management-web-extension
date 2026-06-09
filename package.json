@@ -1,0 +1,12 @@
+{
+  "name": "chess-com-time-management-web-extension",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A Chrome extension that helps Chess.com players manage time by detecting live games and warning on long moves.",
+  "scripts": {
+    "test": "node --test tests/unit/*.test.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

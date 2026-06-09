@@ -1,0 +1,8 @@
+# Ignore local dependencies, generated builds, and test output.
+# Keep source, docs, and extension assets tracked in the repository.
+
+node_modules/
+dist/
+.wxt/
+.plasmo/
+coverage/

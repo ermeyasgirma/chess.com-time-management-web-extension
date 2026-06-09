@@ -1,0 +1,19 @@
+{
+  "manifest_version": 3,
+  "name": "Chess.com Time Manager",
+  "description": "Detects Chess.com live games so move-time reminders can be added.",
+  "version": "0.1.0",
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.chess.com/*",
+        "https://chess.com/*"
+      ],
+      "js": [
+        "src/content/chesscom-detector.js",
+        "src/content/live-game-content-script.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ]
+}
