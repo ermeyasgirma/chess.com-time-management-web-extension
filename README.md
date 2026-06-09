@@ -138,7 +138,11 @@ Current files:
 - `manifest.json`: loads the content scripts on Chess.com pages.
 - `src/content/chesscom-detector.js`: isolated live-game detection logic.
 - `src/content/live-game-content-script.js`: runs detection in the browser, watches DOM changes, and publishes status changes.
+- `src/shared/move-timer.js`: pure state machine for tracking elapsed time on the user's current move.
+- `src/shared/warning-controller.js`: pure warning decision logic for thresholds, cooldowns, and per-move warning limits.
 - `tests/unit/chesscom-detector.test.js`: unit tests for URL and DOM detection behavior.
+- `tests/unit/move-timer.test.js`: unit tests for move timer transitions.
+- `tests/unit/warning-controller.test.js`: unit tests for warning threshold and cooldown behavior.
 
 To test locally:
 
@@ -163,3 +167,34 @@ data-chess-time-manager-is-live-game="true"
 ```
 
 This initial slice uses plain JavaScript so the extension can be loaded directly before build tooling is introduced. When the project is scaffolded with WXT or Plasmo, the detector should be moved to TypeScript while keeping the same isolated module boundary.
+
+## Timer And Warning Logic
+
+The second implementation slice adds the core timing behavior without wiring it to Chess.com yet.
+
+`src/shared/move-timer.js` tracks:
+
+- whether it is currently the user's turn
+- the current move id
+- when the current turn started
+- elapsed time for the current move
+- duplicate start events for the same move, without resetting the timer
+- transitions back to opponent turn, game over, or idle
+
+`src/shared/warning-controller.js` decides whether a warning should fire from:
+
+- the current timer state
+- whether warnings are enabled
+- the configured move-time threshold
+- a global warning cooldown
+- the maximum number of warnings allowed per move
+
+The next implementation step should be Chess.com-specific user-turn detection. That layer should translate page state into simple timer events such as:
+
+```text
+user-turn-started
+tick
+user-turn-ended
+game-ended
+reset
+```
