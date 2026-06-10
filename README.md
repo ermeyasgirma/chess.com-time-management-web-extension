@@ -140,6 +140,7 @@ Current files:
 - `src/content/chesscom-turn-detector.js`: conservative user-turn detection based on Chess.com clock evidence.
 - `src/content/debug-overlay.js`: renders a small diagnostic panel on Chess.com pages.
 - `src/content/live-game-content-script.js`: runs detection in the browser, watches DOM changes, updates timer/warning state, and publishes status changes.
+- `src/content/warning-overlay.js`: renders a visible on-page warning when a move-time warning fires.
 - `src/shared/debug-status.js`: formats diagnostic status rows for the debug overlay.
 - `src/shared/move-timer.js`: pure state machine for tracking elapsed time on the user's current move.
 - `src/shared/warning-controller.js`: pure warning decision logic for thresholds, cooldowns, and per-move warning limits.
@@ -163,7 +164,8 @@ To try it in Chrome:
 4. Select this repository folder.
 5. Open a Chess.com live game.
 6. Use the "Chess Time Manager Debug" panel on the page to inspect extension state.
-7. Check the page console for `[Chess Time Manager] Live game detection:` logs if deeper debugging is needed.
+7. Click "Test warning" in the debug panel to confirm the visible warning banner renders.
+8. Check the page console for `[Chess Time Manager] Live game detection:` logs if deeper debugging is needed.
 
 The content script also writes detection state onto the page root element:
 
@@ -192,6 +194,8 @@ The overlay currently shows:
 - module self-test status
 
 The "Run self-test" button runs the timer and warning modules in the content-script context. It starts a synthetic move, advances it to the warning threshold, and verifies that the warning controller fires. This confirms the timer and warning stages work inside the loaded extension even before Chess.com-specific user-turn detection is implemented.
+
+The "Test warning" button shows the same visual warning banner used by real move-time warnings. This gives a simple manual smoke test even if you are not in an active game.
 
 The debug overlay can be hidden with "Hide" and restored with the compact "CTM Debug" button.
 
@@ -246,4 +250,4 @@ game-ended
 reset
 ```
 
-The next implementation step should be a real warning output path, such as a bundled audio file, a visual overlay pulse, or both.
+The current warning output path is a temporary visual banner. The next implementation step should be adding audio playback and user settings for threshold, volume, and enabling/disabling the feature.

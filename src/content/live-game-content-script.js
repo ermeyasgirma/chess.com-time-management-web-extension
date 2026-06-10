@@ -160,6 +160,23 @@
     );
   }
 
+  function publishWarning() {
+    const elapsedMs = timerState ? timerState.elapsedMs : 0;
+    const elapsedSeconds = Math.round(elapsedMs / 1000);
+
+    document.dispatchEvent(
+      new CustomEvent("chess-time-manager:warning-triggered", {
+        detail: {
+          title: "Move now",
+          message: "You have spent too long on this move.",
+          detail: `${elapsedSeconds}s elapsed. Threshold: ${Math.round(
+            settings.thresholdMs / 1000
+          )}s.`
+        }
+      })
+    );
+  }
+
   function runDetection() {
     scheduledDetectionId = 0;
 
@@ -191,6 +208,7 @@
     console.info("[Chess Time Manager] Turn detection:", turnResult);
 
     if (warningEvaluation.shouldWarn) {
+      publishWarning();
       console.info("[Chess Time Manager] Warning ready:", warningEvaluation);
     }
   }

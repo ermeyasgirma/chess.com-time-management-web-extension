@@ -115,6 +115,18 @@
     renderOverlay();
   }
 
+  function testWarningOverlay() {
+    document.dispatchEvent(
+      new CustomEvent("chess-time-manager:warning-triggered", {
+        detail: {
+          title: "Move now",
+          message: "This is a test warning from the debug panel.",
+          detail: "The visual warning output path is working."
+        }
+      })
+    );
+  }
+
   function getStatus() {
     return debugStatus.buildDebugStatus({
       detection: latestDetection,
@@ -337,10 +349,12 @@
     const rows = createElement("div", "ctm-debug__rows");
     const actions = createElement("div", "ctm-debug__actions");
     const selfTestButton = createElement("button", "ctm-debug__button ctm-debug__button--primary", "Run self-test");
+    const warningTestButton = createElement("button", "ctm-debug__button", "Test warning");
     const resetButton = createElement("button", "ctm-debug__button", "Reset");
 
     collapseButton.type = "button";
     selfTestButton.type = "button";
+    warningTestButton.type = "button";
     resetButton.type = "button";
 
     collapseButton.addEventListener("click", () => {
@@ -348,12 +362,14 @@
       renderOverlay();
     });
     selfTestButton.addEventListener("click", runModuleSelfTest);
+    warningTestButton.addEventListener("click", testWarningOverlay);
     resetButton.addEventListener("click", resetModuleSelfTest);
 
     header.appendChild(title);
     header.appendChild(collapseButton);
     appendRows(rows, status.rows);
     actions.appendChild(selfTestButton);
+    actions.appendChild(warningTestButton);
     actions.appendChild(resetButton);
 
     panel.appendChild(header);

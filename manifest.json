@@ -15,6 +15,7 @@
         "src/shared/move-timer.js",
         "src/shared/warning-controller.js",
         "src/shared/debug-status.js",
+        "src/content/warning-overlay.js",
         "src/content/debug-overlay.js",
         "src/content/live-game-content-script.js"
       ],
