@@ -143,11 +143,16 @@ Current files:
 - `src/content/warning-overlay.js`: renders a visible on-page warning when a move-time warning fires.
 - `src/shared/debug-status.js`: formats diagnostic status rows for the debug overlay.
 - `src/shared/move-timer.js`: pure state machine for tracking elapsed time on the user's current move.
+- `src/shared/settings.js`: owns default settings, validation, Chrome storage persistence, and change watching.
 - `src/shared/warning-controller.js`: pure warning decision logic for thresholds, cooldowns, and per-move warning limits.
+- `src/popup/popup.html`: extension popup settings UI.
+- `src/popup/popup.js`: saves and restores popup settings.
+- `src/popup/popup.css`: styles the popup.
 - `tests/unit/chesscom-detector.test.js`: unit tests for URL and DOM detection behavior.
 - `tests/unit/chesscom-turn-detector.test.js`: unit tests for user-turn detection heuristics.
 - `tests/unit/debug-status.test.js`: unit tests for debug overlay status formatting.
 - `tests/unit/move-timer.test.js`: unit tests for move timer transitions.
+- `tests/unit/settings.test.js`: unit tests for settings defaults and form conversion.
 - `tests/unit/warning-controller.test.js`: unit tests for warning threshold and cooldown behavior.
 
 To test locally:
@@ -165,7 +170,8 @@ To try it in Chrome:
 5. Open a Chess.com live game.
 6. Use the "Chess Time Manager Debug" panel on the page to inspect extension state.
 7. Click "Test warning" in the debug panel to confirm the visible warning banner renders.
-8. Check the page console for `[Chess Time Manager] Live game detection:` logs if deeper debugging is needed.
+8. Click the extension icon to open the popup and change the warning threshold.
+9. Check the page console for `[Chess Time Manager] Live game detection:` logs if deeper debugging is needed.
 
 The content script also writes detection state onto the page root element:
 
@@ -198,6 +204,16 @@ The "Run self-test" button runs the timer and warning modules in the content-scr
 The "Test warning" button shows the same visual warning banner used by real move-time warnings. This gives a simple manual smoke test even if you are not in an active game.
 
 The debug overlay can be hidden with "Hide" and restored with the compact "CTM Debug" button.
+
+## Popup Settings
+
+The warning threshold defaults to 15 seconds. The extension popup lets the user:
+
+- enable or disable warnings
+- change the warning threshold in seconds
+- reset back to the defaults
+
+Settings are stored with Chrome extension storage and are picked up by open Chess.com tabs without requiring a page reload. The debug overlay displays the currently active threshold and cooldown values.
 
 ## Turn Detection Integration
 
@@ -250,4 +266,4 @@ game-ended
 reset
 ```
 
-The current warning output path is a temporary visual banner. The next implementation step should be adding audio playback and user settings for threshold, volume, and enabling/disabling the feature.
+The current warning output path is a temporary visual banner. The next implementation step should be adding audio playback and volume controls.

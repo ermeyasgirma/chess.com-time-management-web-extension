@@ -141,6 +141,11 @@
         getModuleTone(moduleState.turnDetector)
       ),
       createRow(
+        "Settings module",
+        moduleState.settings ? "loaded" : "missing",
+        getModuleTone(moduleState.settings)
+      ),
+      createRow(
         "Timer module",
         moduleState.timer ? "loaded" : "missing",
         getModuleTone(moduleState.timer)

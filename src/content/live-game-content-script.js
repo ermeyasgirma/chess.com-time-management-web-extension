@@ -6,6 +6,7 @@
 (function initLiveGameContentScript() {
   const detector = globalThis.ChessTimeManagerDetector;
   const turnDetector = globalThis.ChessTimeManagerTurnDetector;
+  const settingsApi = globalThis.ChessTimeManagerSettings;
   const moveTimer = globalThis.ChessTimeManagerMoveTimer;
   const warningController = globalThis.ChessTimeManagerWarningController;
 
@@ -23,7 +24,8 @@
   const MUTATION_DEBOUNCE_MS = 150;
   const TIMER_TICK_INTERVAL_MS = 1000;
   const TIMER_SOURCE = "chess.com-page";
-  const settings =
+  const defaultSettings =
+    (settingsApi && settingsApi.DEFAULT_SETTINGS) ||
     (warningController && warningController.DEFAULT_WARNING_SETTINGS) || {
       enabled: true,
       thresholdMs: 15000,
@@ -34,6 +36,7 @@
   let lastSignature = "";
   let lastHref = window.location.href;
   let scheduledDetectionId = 0;
+  let settings = defaultSettings;
   let latestDetection = null;
   let latestTurn = null;
   let timerState = moveTimer ? moveTimer.createMoveTimerState({ nowMs: Date.now() }) : null;
@@ -152,6 +155,7 @@
           modules: {
             detector: Boolean(detector),
             turnDetector: Boolean(turnDetector),
+            settings: Boolean(settingsApi),
             timer: Boolean(moveTimer),
             warning: Boolean(warningController)
           }
@@ -253,12 +257,32 @@
     window.setInterval(runDetection, TIMER_TICK_INTERVAL_MS);
   }
 
+  function loadSettings() {
+    if (!settingsApi) {
+      return;
+    }
+
+    settingsApi.getSettings((loadedSettings) => {
+      settings = loadedSettings;
+      scheduleDetection();
+    });
+
+    settingsApi.watchSettings((updatedSettings) => {
+      settings = updatedSettings;
+      if (warningController) {
+        warningState = warningController.createWarningState();
+      }
+      scheduleDetection();
+    });
+  }
+
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", scheduleDetection, { once: true });
   } else {
     scheduleDetection();
   }
 
+  loadSettings();
   observeDomChanges();
   observeLocationChanges();
   startTimerTicks();

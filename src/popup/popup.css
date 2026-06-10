@@ -1,0 +1,116 @@
+/*
+ * Styles the extension popup settings form.
+ * Structure: popup shell, form fields, switch, buttons, and status text.
+ */
+
+body {
+  margin: 0;
+  min-width: 300px;
+  background: #f6f8fa;
+  color: #17202a;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.popup {
+  box-sizing: border-box;
+  padding: 14px;
+}
+
+.popup__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.popup__title {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.2;
+}
+
+.popup__form {
+  display: grid;
+  gap: 14px;
+}
+
+.field {
+  display: grid;
+  gap: 6px;
+}
+
+.field__label {
+  color: #4b5560;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.field__control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.field input {
+  box-sizing: border-box;
+  width: 92px;
+  border: 1px solid #aeb9c4;
+  border-radius: 4px;
+  color: #17202a;
+  font: inherit;
+  padding: 7px 8px;
+}
+
+.field__suffix {
+  color: #4b5560;
+  font-size: 12px;
+}
+
+.switch {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #4b5560;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.popup__actions {
+  display: flex;
+  gap: 8px;
+}
+
+.button {
+  appearance: none;
+  border: 1px solid #aeb9c4;
+  border-radius: 4px;
+  background: #ffffff;
+  color: #17202a;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+  padding: 7px 10px;
+}
+
+.button:hover {
+  background: #edf2f7;
+}
+
+.button--primary {
+  border-color: #2864c8;
+  background: #2864c8;
+  color: #ffffff;
+}
+
+.button--primary:hover {
+  background: #1f55ad;
+}
+
+.popup__status {
+  min-height: 16px;
+  margin: 0;
+  color: #17633a;
+  font-size: 12px;
+  font-weight: 700;
+}

@@ -6,6 +6,7 @@
 (function initChessTimeManagerDebugOverlay() {
   const detector = globalThis.ChessTimeManagerDetector;
   const turnDetector = globalThis.ChessTimeManagerTurnDetector;
+  const settingsApi = globalThis.ChessTimeManagerSettings;
   const moveTimer = globalThis.ChessTimeManagerMoveTimer;
   const warningController = globalThis.ChessTimeManagerWarningController;
   const debugStatus = globalThis.ChessTimeManagerDebugStatus;
@@ -17,7 +18,8 @@
 
   const OVERLAY_ID = "chess-time-manager-debug-overlay";
   const SELF_TEST_MOVE_ID = "debug:self-test";
-  const settings =
+  const defaultSettings =
+    (settingsApi && settingsApi.DEFAULT_SETTINGS) ||
     (warningController && warningController.DEFAULT_WARNING_SETTINGS) || {
       enabled: true,
       thresholdMs: 15000,
@@ -27,6 +29,7 @@
 
   let latestDetection = null;
   let latestTurn = null;
+  let settings = defaultSettings;
   let timerSource = "not connected";
   let timerState = moveTimer ? moveTimer.createMoveTimerState({ nowMs: Date.now() }) : null;
   let warningState = warningController ? warningController.createWarningState() : null;
@@ -139,6 +142,7 @@
       modules: {
         detector: Boolean(detector),
         turnDetector: Boolean(turnDetector),
+        settings: Boolean(settingsApi),
         timer: Boolean(moveTimer),
         warning: Boolean(warningController)
       },
@@ -406,6 +410,7 @@
 
     latestDetection = state.detection || latestDetection;
     latestTurn = state.turnDetection || latestTurn;
+    settings = state.settings || settings;
     timerSource = state.timerSource || timerSource;
     timerState = state.timerState || timerState;
     warningEvaluation = state.warningEvaluation || warningEvaluation;

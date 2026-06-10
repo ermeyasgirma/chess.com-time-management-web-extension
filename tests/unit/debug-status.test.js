@@ -34,6 +34,7 @@ test("builds a useful status before live-game detection has reported", () => {
     modules: {
       detector: true,
       turnDetector: true,
+      settings: true,
       timer: true,
       warning: true
     },
@@ -57,6 +58,7 @@ test("builds live-game, timer, and warning diagnostic rows", () => {
     modules: {
       detector: true,
       turnDetector: true,
+      settings: true,
       timer: true,
       warning: true
     },

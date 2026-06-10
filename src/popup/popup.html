@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Chess Time Manager</title>
+    <link rel="stylesheet" href="popup.css">
+  </head>
+  <body>
+    <main class="popup">
+      <header class="popup__header">
+        <h1 class="popup__title">Chess Time Manager</h1>
+        <label class="switch">
+          <input id="enabled" type="checkbox">
+          <span>Enabled</span>
+        </label>
+      </header>
+
+      <form id="settings-form" class="popup__form">
+        <label class="field" for="threshold-seconds">
+          <span class="field__label">Warning threshold</span>
+          <span class="field__control">
+            <input id="threshold-seconds" type="number" min="1" max="300" step="1">
+            <span class="field__suffix">seconds</span>
+          </span>
+        </label>
+
+        <div class="popup__actions">
+          <button class="button button--primary" type="submit">Save</button>
+          <button id="reset-defaults" class="button" type="button">Reset</button>
+        </div>
+
+        <p id="status" class="popup__status" role="status"></p>
+      </form>
+    </main>
+
+    <script src="../shared/settings.js"></script>
+    <script src="popup.js"></script>
+  </body>
+</html>
