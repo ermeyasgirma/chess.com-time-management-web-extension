@@ -5,6 +5,7 @@
 
 (function initChessTimeManagerDebugOverlay() {
   const detector = globalThis.ChessTimeManagerDetector;
+  const turnDetector = globalThis.ChessTimeManagerTurnDetector;
   const moveTimer = globalThis.ChessTimeManagerMoveTimer;
   const warningController = globalThis.ChessTimeManagerWarningController;
   const debugStatus = globalThis.ChessTimeManagerDebugStatus;
@@ -25,6 +26,7 @@
     };
 
   let latestDetection = null;
+  let latestTurn = null;
   let timerSource = "not connected";
   let timerState = moveTimer ? moveTimer.createMoveTimerState({ nowMs: Date.now() }) : null;
   let warningState = warningController ? warningController.createWarningState() : null;
@@ -116,6 +118,7 @@
   function getStatus() {
     return debugStatus.buildDebugStatus({
       detection: latestDetection,
+      turnDetection: latestTurn,
       timerState,
       timerSource,
       warningEvaluation,
@@ -123,6 +126,7 @@
       selfTest,
       modules: {
         detector: Boolean(detector),
+        turnDetector: Boolean(turnDetector),
         timer: Boolean(moveTimer),
         warning: Boolean(warningController)
       },
@@ -378,6 +382,17 @@
 
   document.addEventListener("chess-time-manager:live-game-detection", (event) => {
     latestDetection = event.detail;
+    renderOverlay();
+  });
+
+  document.addEventListener("chess-time-manager:extension-state", (event) => {
+    const state = event.detail || {};
+
+    latestDetection = state.detection || latestDetection;
+    latestTurn = state.turnDetection || latestTurn;
+    timerSource = state.timerSource || timerSource;
+    timerState = state.timerState || timerState;
+    warningEvaluation = state.warningEvaluation || warningEvaluation;
     renderOverlay();
   });
 

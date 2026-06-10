@@ -137,12 +137,14 @@ Current files:
 
 - `manifest.json`: loads the content scripts on Chess.com pages.
 - `src/content/chesscom-detector.js`: isolated live-game detection logic.
+- `src/content/chesscom-turn-detector.js`: conservative user-turn detection based on Chess.com clock evidence.
 - `src/content/debug-overlay.js`: renders a small diagnostic panel on Chess.com pages.
-- `src/content/live-game-content-script.js`: runs detection in the browser, watches DOM changes, and publishes status changes.
+- `src/content/live-game-content-script.js`: runs detection in the browser, watches DOM changes, updates timer/warning state, and publishes status changes.
 - `src/shared/debug-status.js`: formats diagnostic status rows for the debug overlay.
 - `src/shared/move-timer.js`: pure state machine for tracking elapsed time on the user's current move.
 - `src/shared/warning-controller.js`: pure warning decision logic for thresholds, cooldowns, and per-move warning limits.
 - `tests/unit/chesscom-detector.test.js`: unit tests for URL and DOM detection behavior.
+- `tests/unit/chesscom-turn-detector.test.js`: unit tests for user-turn detection heuristics.
 - `tests/unit/debug-status.test.js`: unit tests for debug overlay status formatting.
 - `tests/unit/move-timer.test.js`: unit tests for move timer transitions.
 - `tests/unit/warning-controller.test.js`: unit tests for warning threshold and cooldown behavior.
@@ -183,7 +185,7 @@ The overlay currently shows:
 - whether the current page is on Chess.com
 - live-game detection status
 - board and clock evidence
-- user-turn detection status, currently marked as not wired yet
+- user-turn detection status
 - move timer state
 - latest warning decision
 - threshold and cooldown settings
@@ -192,6 +194,26 @@ The overlay currently shows:
 The "Run self-test" button runs the timer and warning modules in the content-script context. It starts a synthetic move, advances it to the warning threshold, and verifies that the warning controller fires. This confirms the timer and warning stages work inside the loaded extension even before Chess.com-specific user-turn detection is implemented.
 
 The debug overlay can be hidden with "Hide" and restored with the compact "CTM Debug" button.
+
+## Turn Detection Integration
+
+The extension now includes a Chess.com-specific turn detector. It uses conservative DOM evidence from the player's bottom clock and the opponent's top clock:
+
+- bottom/player clock active: `user-turn-started`
+- top/opponent clock active: `opponent-turn-started`
+- game-over UI detected: `game-ended`
+- no clear clock signal: `tick`
+- no active live game: `reset`
+
+`src/content/live-game-content-script.js` is the current integration layer. It combines:
+
+- live-game detection
+- turn detection
+- move timer updates
+- warning evaluation
+- debug overlay state publishing
+
+The integration publishes a `chess-time-manager:extension-state` event on the page document so the debug overlay can inspect every stage without owning the detection logic.
 
 ## Timer And Warning Logic
 
@@ -214,7 +236,7 @@ The second implementation slice adds the core timing behavior without wiring it 
 - a global warning cooldown
 - the maximum number of warnings allowed per move
 
-The next implementation step should be Chess.com-specific user-turn detection. That layer should translate page state into simple timer events such as:
+The turn detection layer translates page state into simple timer events:
 
 ```text
 user-turn-started
@@ -223,3 +245,5 @@ user-turn-ended
 game-ended
 reset
 ```
+
+The next implementation step should be a real warning output path, such as a bundled audio file, a visual overlay pulse, or both.

@@ -11,6 +11,7 @@
       ],
       "js": [
         "src/content/chesscom-detector.js",
+        "src/content/chesscom-turn-detector.js",
         "src/shared/move-timer.js",
         "src/shared/warning-controller.js",
         "src/shared/debug-status.js",

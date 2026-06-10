@@ -33,6 +33,7 @@ test("builds a useful status before live-game detection has reported", () => {
   const status = buildDebugStatus({
     modules: {
       detector: true,
+      turnDetector: true,
       timer: true,
       warning: true
     },
@@ -46,6 +47,7 @@ test("builds a useful status before live-game detection has reported", () => {
   assert.equal(status.updatedAtMs, 1000);
   assert.equal(findRow(status, "Extension").value, "loaded");
   assert.equal(findRow(status, "Live game").value, "waiting for detection");
+  assert.equal(findRow(status, "User-turn detection").value, "waiting for turn detection");
   assert.equal(findRow(status, "Move timer").value, "unavailable");
   assert.equal(findRow(status, "Module self-test").value, "not run");
 });
@@ -54,6 +56,7 @@ test("builds live-game, timer, and warning diagnostic rows", () => {
   const status = buildDebugStatus({
     modules: {
       detector: true,
+      turnDetector: true,
       timer: true,
       warning: true
     },
@@ -69,6 +72,18 @@ test("builds live-game, timer, and warning diagnostic rows", () => {
         boardSelector: "wc-chess-board",
         hasClockEvidence: true,
         clockMatchCount: 2
+      }
+    },
+    turnDetection: {
+      status: "user-turn",
+      reason: "The bottom/player clock appears active.",
+      evidence: {
+        bottom: {
+          selector: ".clock-bottom"
+        },
+        top: {
+          selector: ".clock-top"
+        }
       }
     },
     timerSource: "self-test",
@@ -98,6 +113,8 @@ test("builds live-game, timer, and warning diagnostic rows", () => {
   assert.equal(findRow(status, "Live game").value, "active-live-game");
   assert.equal(findRow(status, "Board").detail, "wc-chess-board");
   assert.equal(findRow(status, "Clock evidence").value, "2 matches");
+  assert.equal(findRow(status, "User-turn detection").value, "user-turn");
+  assert.equal(findRow(status, "Turn evidence").value, "bottom: .clock-bottom, top: .clock-top");
   assert.equal(findRow(status, "Timer source").value, "self-test");
   assert.equal(findRow(status, "Move timer").value, "user-turn, 15.0s");
   assert.equal(findRow(status, "Warning").value, "warning-fired");
