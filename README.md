@@ -138,6 +138,8 @@ The first implementation slice detects Chess.com live games as an unpacked Manif
 Current files:
 
 - `manifest.json`: loads the content scripts on Chess.com pages.
+- `public/icons/`: bundled extension icon assets in Chrome's expected sizes.
+- `public/audio/warning.mp3`: bundled warning beep ready for the audio playback step.
 - `src/content/chesscom-detector.js`: isolated live-game detection logic.
 - `src/content/chesscom-turn-detector.js`: conservative user-turn detection based on Chess.com clock evidence.
 - `src/content/debug-overlay.js`: renders a small diagnostic panel on Chess.com pages.
@@ -153,6 +155,7 @@ Current files:
 - `docs/privacy.md`: describes what data is processed and stored.
 - `docs/release-checklist.md`: simple checklist for Chrome testing and packaging.
 - `docs/security.md`: security risks and mitigations to keep in mind.
+- `docs/asset-credits.md`: source and license notes for bundled icons and audio.
 - `tests/unit/chesscom-detector.test.js`: unit tests for URL and DOM detection behavior.
 - `tests/unit/chesscom-turn-detector.test.js`: unit tests for user-turn detection heuristics.
 - `tests/unit/debug-status.test.js`: unit tests for debug overlay status formatting.

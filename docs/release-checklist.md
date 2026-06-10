@@ -25,6 +25,7 @@ Use this checklist before sharing or publishing a build.
 
 - Confirm icons are included before publishing.
 - Confirm audio assets are original, licensed, or user-provided.
+- Confirm `docs/asset-credits.md` is current for bundled icons and audio.
 - Do not include famous-player voice clips, names, or likenesses without explicit permission.
 
 ## Package

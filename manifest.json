@@ -3,11 +3,23 @@
   "name": "Chess.com Time Manager",
   "description": "Detects Chess.com live games so move-time reminders can be added.",
   "version": "0.1.0",
+  "icons": {
+    "16": "public/icons/icon16.png",
+    "32": "public/icons/icon32.png",
+    "48": "public/icons/icon48.png",
+    "128": "public/icons/icon128.png"
+  },
   "permissions": [
     "storage"
   ],
   "action": {
-    "default_popup": "src/popup/popup.html"
+    "default_popup": "src/popup/popup.html",
+    "default_icon": {
+      "16": "public/icons/icon16.png",
+      "32": "public/icons/icon32.png",
+      "48": "public/icons/icon48.png",
+      "128": "public/icons/icon128.png"
+    }
   },
   "content_scripts": [
     {
