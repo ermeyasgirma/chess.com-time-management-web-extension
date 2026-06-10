@@ -15,6 +15,7 @@
   const STORAGE_KEY = "chessTimeManagerSettings";
   const DEFAULT_SETTINGS = Object.freeze({
     enabled: true,
+    debugOverlayEnabled: false,
     thresholdMs: 15000,
     cooldownMs: 8000,
     maxWarningsPerMove: 1
@@ -39,6 +40,7 @@
 
     return {
       enabled: rawSettings.enabled !== false,
+      debugOverlayEnabled: rawSettings.debugOverlayEnabled === true,
       thresholdMs: clampNumber(
         rawSettings.thresholdMs,
         1000,
@@ -65,6 +67,7 @@
 
     return {
       enabled: normalizedSettings.enabled,
+      debugOverlayEnabled: normalizedSettings.debugOverlayEnabled,
       thresholdSeconds: Math.round(normalizedSettings.thresholdMs / 1000)
     };
   }
@@ -75,6 +78,7 @@
     return normalizeSettings({
       ...DEFAULT_SETTINGS,
       enabled: safeValues.enabled !== false,
+      debugOverlayEnabled: safeValues.debugOverlayEnabled === true,
       thresholdMs: Number(safeValues.thresholdSeconds) * 1000
     });
   }

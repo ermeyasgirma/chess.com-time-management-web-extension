@@ -84,6 +84,8 @@ chess.com-time-management-web-extension/
   docs/
     architecture.md
     privacy.md
+    release-checklist.md
+    security.md
 ```
 
 ## MVP Scope
@@ -148,6 +150,9 @@ Current files:
 - `src/popup/popup.html`: extension popup settings UI.
 - `src/popup/popup.js`: saves and restores popup settings.
 - `src/popup/popup.css`: styles the popup.
+- `docs/privacy.md`: describes what data is processed and stored.
+- `docs/release-checklist.md`: simple checklist for Chrome testing and packaging.
+- `docs/security.md`: security risks and mitigations to keep in mind.
 - `tests/unit/chesscom-detector.test.js`: unit tests for URL and DOM detection behavior.
 - `tests/unit/chesscom-turn-detector.test.js`: unit tests for user-turn detection heuristics.
 - `tests/unit/debug-status.test.js`: unit tests for debug overlay status formatting.
@@ -168,9 +173,9 @@ To try it in Chrome:
 3. Choose "Load unpacked".
 4. Select this repository folder.
 5. Open a Chess.com live game.
-6. Use the "Chess Time Manager Debug" panel on the page to inspect extension state.
-7. Click "Test warning" in the debug panel to confirm the visible warning banner renders.
-8. Click the extension icon to open the popup and change the warning threshold.
+6. Click the extension icon to open the popup and change the warning threshold.
+7. Enable "Show debug overlay" in the popup if you want to inspect extension state.
+8. Click "Test warning" in the debug panel to confirm the visible warning banner renders.
 9. Check the page console for `[Chess Time Manager] Live game detection:` logs if deeper debugging is needed.
 
 The content script also writes detection state onto the page root element:
@@ -184,7 +189,7 @@ This initial slice uses plain JavaScript so the extension can be loaded directly
 
 ## Debug Overlay
 
-The extension now renders a small debug overlay on Chess.com pages. This is intended as a temporary development tool so each project stage can be checked manually while the extension is loaded.
+The extension can render a small debug overlay on Chess.com pages. It is disabled by default and can be enabled from the popup with "Show debug overlay". This is intended as a temporary development tool so each project stage can be checked manually while the extension is loaded.
 
 The overlay currently shows:
 
@@ -211,6 +216,7 @@ The warning threshold defaults to 15 seconds. The extension popup lets the user:
 
 - enable or disable warnings
 - change the warning threshold in seconds
+- show or hide the debug overlay
 - reset back to the defaults
 
 Settings are stored with Chrome extension storage and are picked up by open Chess.com tabs without requiring a page reload. The debug overlay displays the currently active threshold and cooldown values.

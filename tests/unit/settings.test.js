@@ -18,6 +18,7 @@ test("defaults to a 15 second warning threshold", () => {
 
   assert.equal(settings.thresholdMs, 15000);
   assert.equal(settings.enabled, true);
+  assert.equal(settings.debugOverlayEnabled, false);
 });
 
 test("clamps unsafe threshold values", () => {
@@ -28,10 +29,12 @@ test("clamps unsafe threshold values", () => {
 test("converts popup form values to stored settings", () => {
   const settings = formValuesToSettings({
     enabled: false,
+    debugOverlayEnabled: true,
     thresholdSeconds: 20
   });
 
   assert.equal(settings.enabled, false);
+  assert.equal(settings.debugOverlayEnabled, true);
   assert.equal(settings.thresholdMs, 20000);
 });
 
@@ -42,5 +45,6 @@ test("converts stored settings to popup form values", () => {
   });
 
   assert.equal(values.enabled, true);
+  assert.equal(values.debugOverlayEnabled, false);
   assert.equal(values.thresholdSeconds, 45);
 });

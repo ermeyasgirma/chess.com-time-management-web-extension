@@ -22,6 +22,7 @@
     (settingsApi && settingsApi.DEFAULT_SETTINGS) ||
     (warningController && warningController.DEFAULT_WARNING_SETTINGS) || {
       enabled: true,
+      debugOverlayEnabled: false,
       thresholdMs: 15000,
       cooldownMs: 8000,
       maxWarningsPerMove: 1
@@ -175,6 +176,14 @@
     }
 
     return host.shadowRoot;
+  }
+
+  function clearOverlayRoot() {
+    const host = document.getElementById(OVERLAY_ID);
+
+    if (host && host.shadowRoot) {
+      host.shadowRoot.replaceChildren();
+    }
   }
 
   function appendStyles(shadowRoot) {
@@ -388,6 +397,11 @@
       return;
     }
 
+    if (!settings.debugOverlayEnabled) {
+      clearOverlayRoot();
+      return;
+    }
+
     const shadowRoot = ensureOverlayRoot();
     shadowRoot.replaceChildren();
     appendStyles(shadowRoot);
@@ -417,9 +431,26 @@
     renderOverlay();
   });
 
+  function loadDebugSettings() {
+    if (!settingsApi) {
+      renderOverlay();
+      return;
+    }
+
+    settingsApi.getSettings((loadedSettings) => {
+      settings = loadedSettings;
+      renderOverlay();
+    });
+
+    settingsApi.watchSettings((updatedSettings) => {
+      settings = updatedSettings;
+      renderOverlay();
+    });
+  }
+
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", renderOverlay, { once: true });
+    document.addEventListener("DOMContentLoaded", loadDebugSettings, { once: true });
   } else {
-    renderOverlay();
+    loadDebugSettings();
   }
 })();

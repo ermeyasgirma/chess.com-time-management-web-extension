@@ -11,10 +11,14 @@
   }
 
   const enabledInput = document.getElementById("enabled");
+  const debugOverlayInput = document.getElementById("debug-overlay-enabled");
   const thresholdInput = document.getElementById("threshold-seconds");
   const form = document.getElementById("settings-form");
   const resetButton = document.getElementById("reset-defaults");
   const status = document.getElementById("status");
+  const warningsStatus = document.getElementById("warnings-status");
+  const thresholdStatus = document.getElementById("threshold-status");
+  const debugStatus = document.getElementById("debug-status");
 
   function setStatus(message) {
     status.textContent = message;
@@ -30,12 +34,17 @@
     const values = settingsApi.settingsToFormValues(settings);
 
     enabledInput.checked = values.enabled;
+    debugOverlayInput.checked = values.debugOverlayEnabled;
     thresholdInput.value = String(values.thresholdSeconds);
+    warningsStatus.textContent = values.enabled ? "On" : "Off";
+    thresholdStatus.textContent = `${values.thresholdSeconds}s`;
+    debugStatus.textContent = values.debugOverlayEnabled ? "On" : "Off";
   }
 
   function getSettingsFromForm() {
     return settingsApi.formValuesToSettings({
       enabled: enabledInput.checked,
+      debugOverlayEnabled: debugOverlayInput.checked,
       thresholdSeconds: Number(thresholdInput.value)
     });
   }
