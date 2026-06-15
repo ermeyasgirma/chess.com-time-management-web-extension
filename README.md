@@ -121,34 +121,36 @@ The extension should request the narrowest permissions possible. For the MVP, th
 
 ## Development Priorities
 
-1. Scaffold the Manifest V3 TypeScript extension.
-2. Implement the move timer and warning logic as pure TypeScript modules.
+1. Scaffold the Manifest V3 extension.
+2. Implement the move timer and warning logic as pure modules.
 3. Add unit tests for timer state changes and warning thresholds.
 4. Wire the logic into a Chess.com content script.
 5. Add popup settings.
-6. Add audio playback.
+6. Add visual and audio playback.
 7. Test against real Chess.com live games and adjust DOM detection.
 
 The most fragile part will likely be Chess.com page detection because the site's DOM can change. Keep that logic isolated in the detector module (`src/content/chesscom-detector.js` today, eventually `chesscom-detector.ts`) so it is easy to update.
 
 ## Current Implementation
 
-The first implementation slice detects Chess.com live games as an unpacked Manifest V3 extension with no external dependencies.
+The current MVP detects Chess.com live games, tracks user-turn move time, and can trigger visual and/or audio warnings as an unpacked Manifest V3 extension with no external dependencies.
 
 Current files:
 
 - `manifest.json`: loads the content scripts on Chess.com pages.
+- `AGENTS.md`: quick orientation notes for future agentic development sessions.
 - `public/icons/`: bundled extension icon assets in Chrome's expected sizes.
-- `public/audio/warning.mp3`: bundled warning beep ready for the audio playback step.
+- `public/audio/warning.mp3`: bundled warning beep used by the audio warning path.
 - `src/content/chesscom-detector.js`: isolated live-game detection logic.
 - `src/content/chesscom-turn-detector.js`: conservative user-turn detection based on Chess.com clock evidence.
 - `src/content/debug-overlay.js`: renders a small diagnostic panel on Chess.com pages.
 - `src/content/live-game-content-script.js`: runs detection in the browser, watches DOM changes, updates timer/warning state, and publishes status changes.
-- `src/content/warning-overlay.js`: renders a visible on-page warning when a move-time warning fires.
+- `src/content/warning-overlay.js`: renders the visual warning and plays the bundled audio warning when configured.
 - `src/shared/debug-status.js`: formats diagnostic status rows for the debug overlay.
 - `src/shared/move-timer.js`: pure state machine for tracking elapsed time on the user's current move.
 - `src/shared/settings.js`: owns default settings, validation, Chrome storage persistence, and change watching.
 - `src/shared/warning-controller.js`: pure warning decision logic for thresholds, cooldowns, and per-move warning limits.
+- `src/shared/warning-output.js`: pure warning output logic for visual/audio modes and volume conversion.
 - `src/popup/popup.html`: extension popup settings UI.
 - `src/popup/popup.js`: saves and restores popup settings.
 - `src/popup/popup.css`: styles the popup.
@@ -156,12 +158,15 @@ Current files:
 - `docs/release-checklist.md`: simple checklist for Chrome testing and packaging.
 - `docs/security.md`: security risks and mitigations to keep in mind.
 - `docs/asset-credits.md`: source and license notes for bundled icons and audio.
+- `docs/manual-validation.md`: manual smoke-test flow for real Chess.com games.
+- `docs/chrome-web-store.md`: Chrome Web Store draft copy and screenshot guidance.
 - `tests/unit/chesscom-detector.test.js`: unit tests for URL and DOM detection behavior.
 - `tests/unit/chesscom-turn-detector.test.js`: unit tests for user-turn detection heuristics.
 - `tests/unit/debug-status.test.js`: unit tests for debug overlay status formatting.
 - `tests/unit/move-timer.test.js`: unit tests for move timer transitions.
 - `tests/unit/settings.test.js`: unit tests for settings defaults and form conversion.
 - `tests/unit/warning-controller.test.js`: unit tests for warning threshold and cooldown behavior.
+- `tests/unit/warning-output.test.js`: unit tests for warning output mode and volume behavior.
 
 To test locally:
 
@@ -176,10 +181,11 @@ To try it in Chrome:
 3. Choose "Load unpacked".
 4. Select this repository folder.
 5. Open a Chess.com live game.
-6. Click the extension icon to open the popup and change the warning threshold.
-7. Enable "Show debug overlay" in the popup if you want to inspect extension state.
-8. Click "Test warning" in the debug panel to confirm the visible warning banner renders.
-9. Check the page console for `[Chess Time Manager] Live game detection:` logs if deeper debugging is needed.
+6. Click the extension icon to open the popup and change the warning threshold, warning output mode, or volume.
+7. Click "Test sound" in the popup to confirm the bundled audio can play.
+8. Enable "Show debug overlay" in the popup if you want to inspect extension state.
+9. Click "Test warning" in the debug panel to confirm the configured warning output path works.
+10. Check the page console for `[Chess Time Manager] Live game detection:` logs if deeper debugging is needed.
 
 The content script also writes detection state onto the page root element:
 
@@ -197,19 +203,20 @@ The extension can render a small debug overlay on Chess.com pages. It is disable
 The overlay currently shows:
 
 - whether the extension scripts loaded
-- whether the detector, timer, and warning modules loaded
+- whether the detector, timer, warning, and warning-output modules loaded
 - whether the current page is on Chess.com
 - live-game detection status
 - board and clock evidence
 - user-turn detection status
 - move timer state
 - latest warning decision
-- threshold and cooldown settings
+- threshold, cooldown, warning mode, and volume settings
+- latest audio playback status
 - module self-test status
 
 The "Run self-test" button runs the timer and warning modules in the content-script context. It starts a synthetic move, advances it to the warning threshold, and verifies that the warning controller fires. This confirms the timer and warning stages work inside the loaded extension even before Chess.com-specific user-turn detection is implemented.
 
-The "Test warning" button shows the same visual warning banner used by real move-time warnings. This gives a simple manual smoke test even if you are not in an active game.
+The "Test warning" button triggers the same configured warning output path used by real move-time warnings. This gives a simple manual smoke test even if you are not in an active game.
 
 The debug overlay can be hidden with "Hide" and restored with the compact "CTM Debug" button.
 
@@ -219,10 +226,13 @@ The warning threshold defaults to 15 seconds. The extension popup lets the user:
 
 - enable or disable warnings
 - change the warning threshold in seconds
+- choose visual + sound, sound only, or visual only output
+- change warning sound volume
+- test the bundled warning sound
 - show or hide the debug overlay
 - reset back to the defaults
 
-Settings are stored with Chrome extension storage and are picked up by open Chess.com tabs without requiring a page reload. The debug overlay displays the currently active threshold and cooldown values.
+Settings are stored with Chrome extension storage and are picked up by open Chess.com tabs without requiring a page reload. The debug overlay displays the currently active threshold, cooldown, output mode, and volume values.
 
 ## Turn Detection Integration
 
@@ -246,7 +256,7 @@ The integration publishes a `chess-time-manager:extension-state` event on the pa
 
 ## Timer And Warning Logic
 
-The second implementation slice adds the core timing behavior without wiring it to Chess.com yet.
+The current implementation keeps core timing behavior in pure modules and wires those modules into the Chess.com content script.
 
 `src/shared/move-timer.js` tracks:
 
@@ -275,4 +285,20 @@ game-ended
 reset
 ```
 
-The current warning output path is a temporary visual banner. The next implementation step should be adding audio playback and volume controls.
+The warning output path supports a visual banner, bundled audio playback, or both. Audio uses `public/audio/warning.mp3`, is controlled by the popup volume setting, and is exposed to Chess.com tabs through the narrow `web_accessible_resources` entry in `manifest.json`.
+
+## Packaging
+
+Run the tests before packaging:
+
+```bash
+npm test
+```
+
+Create a Chrome-ready zip from the current working tree:
+
+```bash
+npm run package:chrome
+```
+
+See `docs/release-checklist.md` and `docs/chrome-web-store.md` before uploading a build.

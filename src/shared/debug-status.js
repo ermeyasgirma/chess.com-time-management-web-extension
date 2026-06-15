@@ -154,6 +154,11 @@
         "Warning module",
         moduleState.warning ? "loaded" : "missing",
         getModuleTone(moduleState.warning)
+      ),
+      createRow(
+        "Warning output module",
+        moduleState.warningOutput ? "loaded" : "missing",
+        getModuleTone(moduleState.warningOutput)
       )
     ];
   }
@@ -236,6 +241,10 @@
 
   function buildWarningRows(warningEvaluation, settings) {
     const safeSettings = settings || {};
+    const warningMode = safeSettings.warningMode || "visual-and-audio";
+    const volumePercent = Number.isFinite(safeSettings.volumePercent)
+      ? safeSettings.volumePercent
+      : 80;
 
     return [
       createRow(
@@ -244,8 +253,23 @@
         warningEvaluation && warningEvaluation.shouldWarn ? "good" : "neutral"
       ),
       createRow("Threshold", formatDurationMs(safeSettings.thresholdMs), "neutral"),
-      createRow("Cooldown", formatDurationMs(safeSettings.cooldownMs), "neutral")
+      createRow("Cooldown", formatDurationMs(safeSettings.cooldownMs), "neutral"),
+      createRow("Warning mode", warningMode, "neutral"),
+      createRow("Audio volume", `${Math.round(volumePercent)}%`, "neutral")
     ];
+  }
+
+  function buildAudioStatusRow(audioStatus) {
+    const safeStatus = audioStatus || {};
+    const status = safeStatus.status || "not played";
+    const tone =
+      status === "playing"
+        ? "good"
+        : status === "blocked" || status === "error"
+          ? "warn"
+          : "muted";
+
+    return createRow("Audio playback", status, tone, safeStatus.reason || "");
   }
 
   function buildSelfTestRow(selfTest) {
@@ -269,6 +293,7 @@
         ...buildTurnRows(statusOptions.turnDetection),
         ...buildTimerRows(statusOptions.timerState, statusOptions.timerSource),
         ...buildWarningRows(statusOptions.warningEvaluation, statusOptions.settings),
+        buildAudioStatusRow(statusOptions.audioStatus),
         buildSelfTestRow(statusOptions.selfTest)
       ]
     };

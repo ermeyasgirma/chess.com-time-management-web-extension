@@ -31,6 +31,10 @@
               <dt>Debug panel</dt>
               <dd id="debug-status">Off</dd>
             </div>
+            <div>
+              <dt>Sound</dt>
+              <dd id="sound-status">On</dd>
+            </div>
           </dl>
         </section>
 
@@ -50,6 +54,23 @@
             </span>
           </label>
 
+          <label class="field" for="warning-mode">
+            <span class="field__label">Warning output</span>
+            <select id="warning-mode">
+              <option value="visual-and-audio">Visual + sound</option>
+              <option value="audio-only">Sound only</option>
+              <option value="visual-only">Visual only</option>
+            </select>
+          </label>
+
+          <label class="field" for="volume-percent">
+            <span class="field__label">Sound volume</span>
+            <span class="field__control field__control--range">
+              <input id="volume-percent" type="range" min="0" max="100" step="5">
+              <span id="volume-value" class="field__suffix">80%</span>
+            </span>
+          </label>
+
           <label class="switch">
             <input id="debug-overlay-enabled" type="checkbox">
             <span>Show debug overlay</span>
@@ -58,6 +79,7 @@
 
         <div class="popup__actions">
           <button class="button button--primary" type="submit">Save</button>
+          <button id="test-sound" class="button" type="button">Test sound</button>
           <button id="reset-defaults" class="button" type="button">Reset</button>
         </div>
 

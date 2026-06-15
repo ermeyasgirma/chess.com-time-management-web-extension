@@ -1,6 +1,6 @@
 /*
  * Styles the extension popup settings form.
- * Structure: popup shell, form fields, switch, buttons, and status text.
+ * Structure: popup shell, form fields, warning output controls, buttons, and status text.
  */
 
 body {
@@ -55,7 +55,7 @@ body {
 
 .status-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 8px;
   margin: 0;
 }
@@ -95,9 +95,9 @@ body {
   gap: 8px;
 }
 
-.field input {
+.field input,
+.field select {
   box-sizing: border-box;
-  width: 92px;
   border: 1px solid #aeb9c4;
   border-radius: 4px;
   color: #17202a;
@@ -105,9 +105,29 @@ body {
   padding: 7px 8px;
 }
 
+.field input[type="number"] {
+  width: 92px;
+}
+
+.field select {
+  width: 100%;
+  background: #ffffff;
+}
+
+.field input[type="range"] {
+  flex: 1;
+  min-width: 0;
+  padding: 0;
+}
+
+.field__control--range {
+  width: 100%;
+}
+
 .field__suffix {
   color: #4b5560;
   font-size: 12px;
+  min-width: 36px;
 }
 
 .switch {
@@ -126,6 +146,7 @@ body {
 
 .popup__actions {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
 }
 

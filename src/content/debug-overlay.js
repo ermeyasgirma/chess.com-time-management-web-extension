@@ -9,6 +9,7 @@
   const settingsApi = globalThis.ChessTimeManagerSettings;
   const moveTimer = globalThis.ChessTimeManagerMoveTimer;
   const warningController = globalThis.ChessTimeManagerWarningController;
+  const warningOutput = globalThis.ChessTimeManagerWarningOutput;
   const debugStatus = globalThis.ChessTimeManagerDebugStatus;
 
   if (!debugStatus) {
@@ -25,7 +26,9 @@
       debugOverlayEnabled: false,
       thresholdMs: 15000,
       cooldownMs: 8000,
-      maxWarningsPerMove: 1
+      maxWarningsPerMove: 1,
+      warningMode: "visual-and-audio",
+      volumePercent: 80
     };
 
   let latestDetection = null;
@@ -35,6 +38,10 @@
   let timerState = moveTimer ? moveTimer.createMoveTimerState({ nowMs: Date.now() }) : null;
   let warningState = warningController ? warningController.createWarningState() : null;
   let warningEvaluation = evaluateWarning(Date.now());
+  let audioStatus = {
+    status: "not played",
+    reason: "No warning audio has played in this tab yet."
+  };
   let selfTest = {
     status: "not run",
     message: "Use the self-test to verify timer and warning modules in this tab."
@@ -125,7 +132,7 @@
         detail: {
           title: "Move now",
           message: "This is a test warning from the debug panel.",
-          detail: "The visual warning output path is working."
+          detail: "The configured warning output path is working."
         }
       })
     );
@@ -138,6 +145,7 @@
       timerState,
       timerSource,
       warningEvaluation,
+      audioStatus,
       settings,
       selfTest,
       modules: {
@@ -145,7 +153,8 @@
         turnDetector: Boolean(turnDetector),
         settings: Boolean(settingsApi),
         timer: Boolean(moveTimer),
-        warning: Boolean(warningController)
+        warning: Boolean(warningController),
+        warningOutput: Boolean(warningOutput)
       },
       nowMs: Date.now()
     });
@@ -428,6 +437,11 @@
     timerSource = state.timerSource || timerSource;
     timerState = state.timerState || timerState;
     warningEvaluation = state.warningEvaluation || warningEvaluation;
+    renderOverlay();
+  });
+
+  document.addEventListener("chess-time-manager:warning-audio-status", (event) => {
+    audioStatus = event.detail || audioStatus;
     renderOverlay();
   });
 

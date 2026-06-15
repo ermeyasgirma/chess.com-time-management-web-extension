@@ -9,6 +9,7 @@
   const settingsApi = globalThis.ChessTimeManagerSettings;
   const moveTimer = globalThis.ChessTimeManagerMoveTimer;
   const warningController = globalThis.ChessTimeManagerWarningController;
+  const warningOutput = globalThis.ChessTimeManagerWarningOutput;
 
   if (!detector) {
     console.warn("[Chess Time Manager] Live game detector was not loaded.");
@@ -30,7 +31,9 @@
       enabled: true,
       thresholdMs: 15000,
       cooldownMs: 8000,
-      maxWarningsPerMove: 1
+      maxWarningsPerMove: 1,
+      warningMode: "visual-and-audio",
+      volumePercent: 80
     };
 
   let lastSignature = "";
@@ -157,7 +160,8 @@
             turnDetector: Boolean(turnDetector),
             settings: Boolean(settingsApi),
             timer: Boolean(moveTimer),
-            warning: Boolean(warningController)
+            warning: Boolean(warningController),
+            warningOutput: Boolean(warningOutput)
           }
         }
       })

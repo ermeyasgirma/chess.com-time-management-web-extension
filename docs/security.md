@@ -9,6 +9,7 @@ This document tracks practical security concerns for the project.
 - Settings are stored with Chrome extension storage.
 - Content scripts are limited to Chess.com host matches.
 - UI is rendered with DOM APIs and `textContent`, not raw HTML injection.
+- Warning audio is bundled locally and exposed only to Chess.com matches through `web_accessible_resources`.
 
 ## Main Risks
 
@@ -40,6 +41,16 @@ Mitigation:
 - bundle extension code locally
 - bundle or user-provide audio files
 - avoid remote execution and remote asset loading
+
+### Web Accessible Audio
+
+The bundled MP3 must be web-accessible so a content script can play it on Chess.com pages.
+
+Mitigation:
+
+- expose only `public/audio/warning.mp3`
+- scope matches to Chess.com only
+- do not make broad asset directories web-accessible
 
 ### User Trust And Store Policy
 

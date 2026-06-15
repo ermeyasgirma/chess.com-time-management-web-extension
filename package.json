@@ -4,6 +4,7 @@
   "private": true,
   "description": "A Chrome extension that helps Chess.com players manage time by detecting live games and warning on long moves.",
   "scripts": {
+    "package:chrome": "rm -f chess-time-manager.zip && zip -r chess-time-manager.zip manifest.json src public LICENSE README.md",
     "test": "node --test tests/unit/*.test.js"
   },
   "engines": {

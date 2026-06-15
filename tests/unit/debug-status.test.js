@@ -36,20 +36,25 @@ test("builds a useful status before live-game detection has reported", () => {
       turnDetector: true,
       settings: true,
       timer: true,
-      warning: true
+      warning: true,
+      warningOutput: true
     },
     settings: {
       thresholdMs: 15000,
-      cooldownMs: 8000
+      cooldownMs: 8000,
+      warningMode: "visual-and-audio",
+      volumePercent: 80
     },
     nowMs: 1000
   });
 
   assert.equal(status.updatedAtMs, 1000);
   assert.equal(findRow(status, "Extension").value, "loaded");
+  assert.equal(findRow(status, "Warning output module").value, "loaded");
   assert.equal(findRow(status, "Live game").value, "waiting for detection");
   assert.equal(findRow(status, "User-turn detection").value, "waiting for turn detection");
   assert.equal(findRow(status, "Move timer").value, "unavailable");
+  assert.equal(findRow(status, "Audio playback").value, "not played");
   assert.equal(findRow(status, "Module self-test").value, "not run");
 });
 
@@ -60,7 +65,8 @@ test("builds live-game, timer, and warning diagnostic rows", () => {
       turnDetector: true,
       settings: true,
       timer: true,
-      warning: true
+      warning: true,
+      warningOutput: true
     },
     detection: {
       isLiveGame: true,
@@ -102,7 +108,13 @@ test("builds live-game, timer, and warning diagnostic rows", () => {
     },
     settings: {
       thresholdMs: 15000,
-      cooldownMs: 8000
+      cooldownMs: 8000,
+      warningMode: "audio-only",
+      volumePercent: 45
+    },
+    audioStatus: {
+      status: "playing",
+      reason: "audio started"
     },
     selfTest: {
       status: "pass",
@@ -120,5 +132,8 @@ test("builds live-game, timer, and warning diagnostic rows", () => {
   assert.equal(findRow(status, "Timer source").value, "self-test");
   assert.equal(findRow(status, "Move timer").value, "user-turn, 15.0s");
   assert.equal(findRow(status, "Warning").value, "warning-fired");
+  assert.equal(findRow(status, "Warning mode").value, "audio-only");
+  assert.equal(findRow(status, "Audio volume").value, "45%");
+  assert.equal(findRow(status, "Audio playback").value, "playing");
   assert.equal(findRow(status, "Module self-test").value, "pass");
 });

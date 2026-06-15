@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Chess.com Time Manager",
-  "description": "Detects Chess.com live games so move-time reminders can be added.",
+  "description": "Configurable visual and audio move-time reminders for Chess.com live games.",
   "version": "0.1.0",
   "icons": {
     "16": "public/icons/icon16.png",
@@ -33,12 +33,24 @@
         "src/shared/settings.js",
         "src/shared/move-timer.js",
         "src/shared/warning-controller.js",
+        "src/shared/warning-output.js",
         "src/shared/debug-status.js",
         "src/content/warning-overlay.js",
         "src/content/debug-overlay.js",
         "src/content/live-game-content-script.js"
       ],
       "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "public/audio/warning.mp3"
+      ],
+      "matches": [
+        "https://www.chess.com/*",
+        "https://chess.com/*"
+      ]
     }
   ]
 }

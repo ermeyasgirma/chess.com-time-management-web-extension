@@ -13,9 +13,17 @@
   root.ChessTimeManagerSettings = api;
 })(typeof globalThis !== "undefined" ? globalThis : this, function createSettingsApi() {
   const STORAGE_KEY = "chessTimeManagerSettings";
+  const WARNING_MODES = Object.freeze({
+    VISUAL_AND_AUDIO: "visual-and-audio",
+    VISUAL_ONLY: "visual-only",
+    AUDIO_ONLY: "audio-only"
+  });
+  const VALID_WARNING_MODES = new Set(Object.values(WARNING_MODES));
   const DEFAULT_SETTINGS = Object.freeze({
     enabled: true,
     debugOverlayEnabled: false,
+    warningMode: WARNING_MODES.VISUAL_AND_AUDIO,
+    volumePercent: 80,
     thresholdMs: 15000,
     cooldownMs: 8000,
     maxWarningsPerMove: 1
@@ -37,10 +45,20 @@
 
   function normalizeSettings(settings) {
     const rawSettings = settings || {};
+    const warningMode = VALID_WARNING_MODES.has(rawSettings.warningMode)
+      ? rawSettings.warningMode
+      : DEFAULT_SETTINGS.warningMode;
 
     return {
       enabled: rawSettings.enabled !== false,
       debugOverlayEnabled: rawSettings.debugOverlayEnabled === true,
+      warningMode,
+      volumePercent: clampNumber(
+        rawSettings.volumePercent,
+        0,
+        100,
+        DEFAULT_SETTINGS.volumePercent
+      ),
       thresholdMs: clampNumber(
         rawSettings.thresholdMs,
         1000,
@@ -68,6 +86,8 @@
     return {
       enabled: normalizedSettings.enabled,
       debugOverlayEnabled: normalizedSettings.debugOverlayEnabled,
+      warningMode: normalizedSettings.warningMode,
+      volumePercent: Math.round(normalizedSettings.volumePercent),
       thresholdSeconds: Math.round(normalizedSettings.thresholdMs / 1000)
     };
   }
@@ -79,6 +99,8 @@
       ...DEFAULT_SETTINGS,
       enabled: safeValues.enabled !== false,
       debugOverlayEnabled: safeValues.debugOverlayEnabled === true,
+      warningMode: safeValues.warningMode,
+      volumePercent: Number(safeValues.volumePercent),
       thresholdMs: Number(safeValues.thresholdSeconds) * 1000
     });
   }
@@ -157,6 +179,7 @@
   return {
     DEFAULT_SETTINGS,
     STORAGE_KEY,
+    WARNING_MODES,
     formValuesToSettings,
     getSettings,
     normalizeSettings,

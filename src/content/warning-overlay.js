@@ -1,13 +1,22 @@
 /*
- * Shows a temporary visual warning when the extension decides the user is spending too long.
- * Structure: event listener, shadow-DOM host creation, warning rendering, and auto-dismiss handling.
+ * Shows visual and/or audio warnings when the user spends too long on a move.
+ * Structure: settings loading, audio playback, shadow-DOM rendering, and warning event handling.
  */
 
 (function initChessTimeManagerWarningOverlay() {
+  const settingsApi = globalThis.ChessTimeManagerSettings;
+  const warningOutput = globalThis.ChessTimeManagerWarningOutput;
   const OVERLAY_ID = "chess-time-manager-warning-overlay";
   const AUTO_DISMISS_MS = 3500;
+  const WARNING_AUDIO_PATH = "public/audio/warning.mp3";
+  const defaultSettings = (settingsApi && settingsApi.DEFAULT_SETTINGS) || {
+    warningMode: "visual-and-audio",
+    volumePercent: 80
+  };
 
   let dismissTimerId = 0;
+  let settings = defaultSettings;
+  let warningAudio = null;
 
   function createElement(tagName, className, textContent) {
     const element = document.createElement(tagName);
@@ -131,6 +140,93 @@
     };
   }
 
+  function getAudioUrl() {
+    if (
+      typeof chrome !== "undefined" &&
+      chrome.runtime &&
+      typeof chrome.runtime.getURL === "function"
+    ) {
+      return chrome.runtime.getURL(WARNING_AUDIO_PATH);
+    }
+
+    return WARNING_AUDIO_PATH;
+  }
+
+  function publishAudioStatus(status, reason) {
+    document.dispatchEvent(
+      new CustomEvent("chess-time-manager:warning-audio-status", {
+        detail: {
+          status,
+          reason: reason || "",
+          volumePercent: settings.volumePercent,
+          warningMode: settings.warningMode
+        }
+      })
+    );
+  }
+
+  function shouldShowVisualWarning() {
+    if (warningOutput) {
+      return warningOutput.shouldShowVisualWarning(settings);
+    }
+
+    return settings.warningMode !== "audio-only";
+  }
+
+  function shouldPlayWarningAudio() {
+    if (warningOutput) {
+      return warningOutput.shouldPlayWarningAudio(settings);
+    }
+
+    return settings.warningMode !== "visual-only" && settings.volumePercent > 0;
+  }
+
+  function getAudioVolume() {
+    if (warningOutput) {
+      return warningOutput.getAudioVolume(settings);
+    }
+
+    return Math.min(1, Math.max(0, Number(settings.volumePercent) / 100 || 0.8));
+  }
+
+  function playWarningAudio() {
+    if (!shouldPlayWarningAudio()) {
+      publishAudioStatus("skipped", "audio disabled by settings");
+      return;
+    }
+
+    if (!warningAudio) {
+      warningAudio = new Audio(getAudioUrl());
+      warningAudio.preload = "auto";
+    }
+
+    try {
+      warningAudio.volume = getAudioVolume();
+      warningAudio.currentTime = 0;
+
+      const playResult = warningAudio.play();
+
+      if (playResult && typeof playResult.catch === "function") {
+        playResult
+          .then(() => publishAudioStatus("playing", "audio started"))
+          .catch((error) => {
+            publishAudioStatus(
+              "blocked",
+              error && error.message ? error.message : "browser blocked audio"
+            );
+          });
+        return;
+      }
+
+      publishAudioStatus("playing", "audio started");
+    } catch (error) {
+      publishAudioStatus(
+        "error",
+        error && error.message ? error.message : "audio playback failed"
+      );
+    }
+  }
+
   function showWarning(detail) {
     const shadowRoot = ensureOverlayRoot();
     const warningText = getWarningText(detail);
@@ -157,7 +253,33 @@
     dismissTimerId = window.setTimeout(clearOverlay, AUTO_DISMISS_MS);
   }
 
+  function handleWarning(detail) {
+    if (shouldShowVisualWarning()) {
+      showWarning(detail);
+    } else {
+      clearOverlay();
+    }
+
+    playWarningAudio();
+  }
+
+  function loadSettings() {
+    if (!settingsApi) {
+      return;
+    }
+
+    settingsApi.getSettings((loadedSettings) => {
+      settings = loadedSettings;
+    });
+
+    settingsApi.watchSettings((updatedSettings) => {
+      settings = updatedSettings;
+    });
+  }
+
   document.addEventListener("chess-time-manager:warning-triggered", (event) => {
-    showWarning(event.detail);
+    handleWarning(event.detail);
   });
+
+  loadSettings();
 })();

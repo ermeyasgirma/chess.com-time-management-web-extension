@@ -20,6 +20,8 @@ The extension stores user settings with Chrome extension storage:
 
 - warnings enabled or disabled
 - warning threshold in seconds
+- warning output mode
+- warning volume
 - warning cooldown
 - maximum warnings per move
 - debug overlay enabled or disabled
@@ -31,6 +33,8 @@ These settings may sync through Chrome if browser sync is enabled for the user. 
 The extension does not make network requests.
 
 It does not send game state, Chess.com page data, account information, settings, or usage data to an external service.
+
+The warning sound is bundled locally at `public/audio/warning.mp3`; it is not streamed or fetched from a third-party service at runtime.
 
 ## Permissions
 
@@ -55,4 +59,4 @@ The extension should continue to avoid:
 - storing sensitive Chess.com account information
 - using unlicensed celebrity voices, likenesses, names, or branded audio
 
-If audio assets are added later, they should be bundled, licensed, and reviewed before release.
+Any replacement audio assets should be bundled, licensed, and reviewed before release.
