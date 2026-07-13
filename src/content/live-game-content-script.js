@@ -24,6 +24,9 @@
   const LOCATION_CHECK_INTERVAL_MS = 1000;
   const MUTATION_DEBOUNCE_MS = 150;
   const TIMER_TICK_INTERVAL_MS = 1000;
+  // Briefly tolerate Chess.com DOM churn, but do not let an unclear clock state
+  // carry one user-turn timer across multiple actual moves.
+  const AMBIGUOUS_TURN_GRACE_MS = 2000;
   const TIMER_SOURCE = "chess.com-page";
   const defaultSettings =
     (settingsApi && settingsApi.DEFAULT_SETTINGS) ||
@@ -42,6 +45,7 @@
   let settings = defaultSettings;
   let latestDetection = null;
   let latestTurn = null;
+  let ambiguousTurnStartedAtMs = null;
   let timerState = moveTimer ? moveTimer.createMoveTimerState({ nowMs: Date.now() }) : null;
   let warningState = warningController ? warningController.createWarningState() : null;
   let warningEvaluation = {
@@ -96,6 +100,26 @@
       type: turnResult.timerEventType || "tick",
       nowMs
     };
+
+    if (
+      event.type === "tick" &&
+      turnResult.status === "unknown" &&
+      timerState &&
+      timerState.isUserTurn
+    ) {
+      if (ambiguousTurnStartedAtMs === null) {
+        ambiguousTurnStartedAtMs = nowMs;
+      }
+
+      if (nowMs - ambiguousTurnStartedAtMs >= AMBIGUOUS_TURN_GRACE_MS) {
+        return {
+          type: "user-turn-ended",
+          nowMs
+        };
+      }
+    } else {
+      ambiguousTurnStartedAtMs = null;
+    }
 
     if (event.type === "user-turn-started") {
       event.moveId = turnResult.moveId;
@@ -203,6 +227,12 @@
     updateTimerAndWarning(turnResult, nowMs);
 
     const signature = getDetectionSignature(result, turnResult, warningEvaluation);
+    const shouldPublishWarning = warningEvaluation.shouldWarn;
+
+    if (shouldPublishWarning) {
+      publishWarning();
+      console.info("[Chess Time Manager] Warning ready:", warningEvaluation);
+    }
 
     if (signature === lastSignature) {
       publishExtensionState();
@@ -214,11 +244,6 @@
     publishExtensionState();
     console.info("[Chess Time Manager] Live game detection:", result);
     console.info("[Chess Time Manager] Turn detection:", turnResult);
-
-    if (warningEvaluation.shouldWarn) {
-      publishWarning();
-      console.info("[Chess Time Manager] Warning ready:", warningEvaluation);
-    }
   }
 
   function scheduleDetection() {
