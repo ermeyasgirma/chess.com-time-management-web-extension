@@ -14,7 +14,7 @@
 })(typeof globalThis !== "undefined" ? globalThis : this, function createWarningControllerApi() {
   const DEFAULT_WARNING_SETTINGS = Object.freeze({
     enabled: true,
-    thresholdMs: 15000,
+    thresholdMs: 45000,
     cooldownMs: 8000,
     maxWarningsPerMove: 1
   });

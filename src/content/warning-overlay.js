@@ -54,24 +54,23 @@
 
       .ctm-warning {
         position: fixed;
-        inset: 0;
+        top: 16px;
+        left: 50%;
         z-index: 2147483646;
-        display: grid;
-        place-items: center;
+        width: min(440px, calc(100vw - 32px));
+        transform: translateX(-50%);
         pointer-events: none;
-        background: rgba(23, 32, 42, 0.16);
         font-family: Arial, Helvetica, sans-serif;
       }
 
       .ctm-warning__panel {
-        width: min(520px, calc(100vw - 32px));
         box-sizing: border-box;
         border: 3px solid #d83b2d;
         border-radius: 8px;
         background: #ffffff;
         color: #17202a;
-        box-shadow: 0 18px 50px rgba(0, 0, 0, 0.3);
-        padding: 24px;
+        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.24);
+        padding: 14px 18px;
         text-align: center;
         animation: ctm-warning-pop 180ms ease-out;
       }
@@ -79,7 +78,7 @@
       .ctm-warning__title {
         margin: 0;
         color: #a12622;
-        font-size: 34px;
+        font-size: 22px;
         font-weight: 800;
         letter-spacing: 0;
         line-height: 1.05;
@@ -87,9 +86,9 @@
       }
 
       .ctm-warning__message {
-        margin: 10px 0 0;
+        margin: 6px 0 0;
         color: #17202a;
-        font-size: 16px;
+        font-size: 14px;
         font-weight: 700;
         line-height: 1.35;
       }

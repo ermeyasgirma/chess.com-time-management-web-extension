@@ -222,7 +222,7 @@ The debug overlay can be hidden with "Hide" and restored with the compact "CTM D
 
 ## Popup Settings
 
-The warning threshold defaults to 15 seconds. The extension popup lets the user:
+The warning threshold defaults to 45 seconds. The extension popup lets the user:
 
 - enable or disable warnings
 - change the warning threshold in seconds

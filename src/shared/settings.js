@@ -24,7 +24,7 @@
     debugOverlayEnabled: false,
     warningMode: WARNING_MODES.VISUAL_AND_AUDIO,
     volumePercent: 80,
-    thresholdMs: 15000,
+    thresholdMs: 45000,
     cooldownMs: 8000,
     maxWarningsPerMove: 1
   });

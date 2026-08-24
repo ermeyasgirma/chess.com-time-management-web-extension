@@ -32,7 +32,7 @@
     (settingsApi && settingsApi.DEFAULT_SETTINGS) ||
     (warningController && warningController.DEFAULT_WARNING_SETTINGS) || {
       enabled: true,
-      thresholdMs: 15000,
+       thresholdMs: 45000,
       cooldownMs: 8000,
       maxWarningsPerMove: 1,
       warningMode: "visual-and-audio",

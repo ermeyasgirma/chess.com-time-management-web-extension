@@ -14,12 +14,12 @@ Use this checklist when testing the unpacked extension in Chrome.
 
 - Open the extension popup.
 - Confirm warnings are enabled by default.
-- Confirm the threshold defaults to `15` seconds.
+- Confirm the threshold defaults to `45` seconds.
 - Change "Warning output" between "Visual + sound", "Sound only", and "Visual only".
 - Move the volume slider and confirm the sound status updates.
 - Click "Test sound" and confirm the bundled beep plays when sound is enabled.
 - Set output to "Visual only" and confirm "Test sound" reports that sound is off.
-- Reset defaults and confirm output returns to "Visual + sound" at `80%` volume.
+- Reset defaults and confirm the threshold returns to `45` seconds and output returns to "Visual + sound" at `80%` volume.
 
 ## Chess.com Page Smoke Test
 
@@ -34,6 +34,8 @@ Use this checklist when testing the unpacked extension in Chrome.
   - warning mode and audio volume
 - Click "Run self-test" and confirm the module self-test passes.
 - Click "Test warning" and confirm the configured output path runs.
+- Confirm the visual warning is a compact toast at the top center of the viewport.
+- Confirm the warning does not dim or cover the center of the board and does not block board interaction.
 
 ## Real Game Timing Test
 

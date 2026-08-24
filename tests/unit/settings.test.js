@@ -14,10 +14,10 @@ const {
   settingsToFormValues
 } = require("../../src/shared/settings.js");
 
-test("defaults to a 15 second warning threshold", () => {
+test("defaults to a 45 second warning threshold", () => {
   const settings = normalizeSettings();
 
-  assert.equal(settings.thresholdMs, 15000);
+  assert.equal(settings.thresholdMs, 45000);
   assert.equal(settings.enabled, true);
   assert.equal(settings.debugOverlayEnabled, false);
   assert.equal(settings.warningMode, WARNING_MODES.VISUAL_AND_AUDIO);

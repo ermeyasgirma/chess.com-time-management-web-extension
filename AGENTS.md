@@ -30,7 +30,7 @@ Defaults live in `src/shared/settings.js`:
 - debug overlay disabled
 - warning mode `visual-and-audio`
 - warning volume `80%`
-- move threshold `15s`
+- move threshold `45s`
 - cooldown `8s`
 - max warnings per move `1`
 
