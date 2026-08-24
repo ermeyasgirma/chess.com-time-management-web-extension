@@ -35,6 +35,14 @@ test("classifies Chess.com live game URLs", () => {
   assert.equal(result.urlKind, "live-game");
 });
 
+test("classifies current Chess.com game URLs as live games", () => {
+  const result = classifyUrl("https://www.chess.com/game/173461423300");
+
+  assert.equal(result.isChessCom, true);
+  assert.equal(result.isLiveGameUrl, true);
+  assert.equal(result.urlKind, "live-game");
+});
+
 test("excludes non-Chess.com pages", () => {
   const result = detectChessComLiveGame({
     url: "https://example.com/game/live/123456789",

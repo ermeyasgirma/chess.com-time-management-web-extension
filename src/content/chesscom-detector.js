@@ -105,7 +105,7 @@
       pathname.startsWith("/game/analysis") ||
       pathname.includes("/analysis/game/");
 
-    const isLiveGameUrl = /^\/game\/live\/\d+/.test(pathname);
+    const isLiveGameUrl = /^\/game\/(?:live\/)?\d+/.test(pathname);
     const isPlayOnlineUrl =
       pathname === "/play/online" || pathname.startsWith("/play/online/");
 
